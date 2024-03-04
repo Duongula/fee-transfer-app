@@ -1,3 +1,6 @@
+
+const jwt = require("jsonwebtoken");
+
 const generateAccountNumber = () => {
     const date = Date.now();
     const strDate = date.toString();
@@ -16,7 +19,12 @@ const generatePin = () => {
     return pin;
 }
 
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET);
+}
+
 module.exports = {
     generateAccountNumber,
-    generatePin
+    generatePin,
+    generateToken
 }

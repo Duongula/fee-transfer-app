@@ -1,6 +1,6 @@
 const User = require('../model/userModel');
 const Account = require('../model/accountModel');
-const { generateAccountNumber, generatePin } = require("../utils/helper");
+const { generateAccountNumber, generatePin, generateToken } = require("../utils/helper");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -27,6 +27,9 @@ const createUser = async (req, res) => {
             balance: 0
         });
 
+        // set cookies adter registering the user
+        const token = generateToken(user._id);
+        res.cookie("jwt", token);
         res.status(201).json({ user, account });
     } catch (error) {
         console.log(error.message);
@@ -73,10 +76,7 @@ const getProfile = async (req, res) => {
 }
 
 module.exports = {
-    getUsers,
-    createUser,
-    clearUsers,
-    loginUser,
-    logoutUser,
-    getProfile
+    getUsers, createUser,
+    clearUsers, loginUser,
+    logoutUser, getProfile
 }

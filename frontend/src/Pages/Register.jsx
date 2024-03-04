@@ -7,9 +7,10 @@ import { useSelector } from "react-redux";
 
 function Register() {
 
-    const { user, isSuccess } = useSelector(state => state.user.user)
+    const { user, isSuccess } = useSelector(state => state.user)
+    console.log();
 
-    const dispath = useDispatch();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
@@ -34,7 +35,7 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        dispath(registerUser({
+        dispatch(registerUser({
             name, email, password
         }))
     }
