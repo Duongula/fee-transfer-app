@@ -8,35 +8,26 @@ const makeTransfer = async (req, res) => {
     // account details of receiver - name, account Number
     // user should have funds in account
 
-    const { name, accountNumber } = req.body;
-
+    const { name, accountNumber, amount } = req.body;
     const checkAccountNumber = await Account.findOne({ accountNumber });
-
-    // verify account number
     if (!checkAccountNumber) {
         return res.status(400).json({ message: "Account number not found" });
     }
-    const checkName = await User.findOne({ name });
 
-    // check if sender has enough funds in account
-    const senderId = req.user._id;
-
-    // find the account of user and check the account user balance
-    const sender = await Account.findOne({ user: senderId });
-
+    const sender = await Account.findOne({ user: req.user._id });
     if (!sender) {
         return res.status(400).json({ message: "Sender account not found" });
     }
-
-    // check the balance of the sender
     if (sender.balance < amount) {
         return res.status(400).json({ message: "Insufficient funds" });
     }
 
-    // get receiver
-    const receiver = await Account.findOne({ accountNumber });
+    const receiver = await Account.findOne({ accountNumber }).populate("user");
 
-    // add amount to receiver balance and deduct amount from sender balance
+    if (!receiver.user.name.toLowerCase() === name.toLowerCase()) {
+        return res.status(400).json({ message: "Receiver name does not match account" })
+    }
+
     receiver.balance += amount;
     sender.balance -= amount;
 
@@ -45,9 +36,11 @@ const makeTransfer = async (req, res) => {
 
     const transfer = await Transfer.create({
         senderId: req.user._id,
-        receiver: receiver._id,
+        receiverId: receiver.user._id,
         amount,
     })
+
+    transfer.save();
 
     res.json({ transfer });
 }
@@ -62,18 +55,20 @@ const getTransfers = async (req, res) => {
     try {
         const userId = req.user._id;
         const transfers = await Transfer.find({
-            $or: [{ senderId: userId }, { receiver: userId }]
+            $or: [{ senderId: userId }, { receiverId: userId }]
         })
+            .populate("senderId")
+            .populate("receiverId")
+            .sort({ createAt: -1 })
         if (!transfers) {
             return res.status(404).json({ message: 'No transfers found' });
         }
-        res.status(200).json({ transfers });
+        return res.status(200).json({ transfers });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: 'Something went wrong' });
     }
 
-    res.json({ message: "get transfers" });
 }
 
 module.exports = {

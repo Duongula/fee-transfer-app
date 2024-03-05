@@ -23,17 +23,17 @@ const accountSchema = new mongoose.Schema({
 })
 
 // generate account number here
-accountSchema.pre('save', function (next) {
-    if (!this.isModified('accountNumber')) {
-        this.accountNumber = generateAccountNumber();
-    }
+// accountSchema.pre('save', function (next) {
+//     if (!this.isModified('accountNumber')) {
+//         this.accountNumber = generateAccountNumber();
+//     }
 
-    if (!this.isModified('pin')) {
-        this.pin = generatePin();
-    }
+//     if (!this.isModified('pin')) {
+//         this.pin = generatePin();
+//     }
 
-    next();
-})
+//     next();
+// })
 
 // generate the pin
 

@@ -31,6 +31,7 @@ export const getTransfers = createAsyncThunk("transfer/getTransfers", async (_, 
     try {
         const response = await fetch('/transfer');
         const data = await response.json();
+        console.log(data);
         return data;
     } catch (error) {
         console.log(error.message);
@@ -58,7 +59,7 @@ const transferSlice = createSlice({
             .addCase(createTransfer.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.transfers.push(action.payload);
+                state.transfers = [...state.transfers, action.payload];
             })
             .addCase(createTransfer.rejected, (state, action) => {
                 state.isLoading = false;

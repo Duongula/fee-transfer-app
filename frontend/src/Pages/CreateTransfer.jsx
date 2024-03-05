@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { createTransfer } from "../redux/transfer/transferSlice"
+import { createTransfer, reset } from "../redux/transfer/transferSlice"
 
 
 function CreateTransfer() {
@@ -19,9 +19,9 @@ function CreateTransfer() {
     }, [user])
 
     useEffect(() => {
-        if (isSuccess) {
-            navigate("/transfers");
-        }
+        // if (isSuccess) {
+        //     navigate("/transfer");
+        // }
     }, [isSuccess])
 
     const [formData, setFormData] = useState({
@@ -43,6 +43,7 @@ function CreateTransfer() {
         e.preventDefault()
         // dispatch action to create transfer   
         dispatch(createTransfer({ name, accountNumber, amount }))
+        navigate("/transfer");
     }
 
     return (

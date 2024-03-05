@@ -1,9 +1,16 @@
+import TransferItem from './TransferItem';
 
+function TransferList({ transfers, user }) {
 
-function TransferList() {
     return (
         <div>
-            <h1 className="heading">Your list of transfers</h1>
+            <div>
+                {transfers.map(transfer => {
+                    return (
+                        <TransferItem transfer={transfer} user={user} key={transfer._id} />
+                    )
+                })}
+            </div>
         </div>
     )
 }

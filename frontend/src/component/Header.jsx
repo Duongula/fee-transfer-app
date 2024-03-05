@@ -13,7 +13,7 @@ function Header() {
 
     const handleLogout = async () => {
         dispatch(logoutUser());
-        navigate("/login");
+        navigate("/");
     }
 
     return (
@@ -23,15 +23,19 @@ function Header() {
             </Link>
             <nav>
                 {user ?
-                    (<>
+                    <>
+                        <Link to="/dashboard">Dashboard</Link>
+                        <Link to="/transfer">Transfers</Link>
+                        <Link to="/create">Create</Link>
                         <button onClick={handleLogout}>Logout</button>
-                    </>)
+                    </>
                     :
-                    (<>
+                    <>
                         <Link to="/">Home</Link>
                         <Link to="/login">Login</Link>
                         <Link to="/register">Register</Link>
-                    </>)}
+                    </>
+                }
             </nav>
         </header>
     )
