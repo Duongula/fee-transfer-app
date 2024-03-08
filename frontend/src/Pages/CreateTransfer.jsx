@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { createTransfer, reset } from "../redux/transfer/transferSlice"
 import { getAccount } from "../redux/account/accountSlice";
 import { getFee } from "../redux/fee/feeSlice";
+import { sendOtpCode } from "../redux/transfer/transferSlice";
 
 
 function CreateTransfer() {
@@ -39,21 +40,29 @@ function CreateTransfer() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (condition === false) {
-            dispatch(createTransfer(fee));
-            navigate("/transfer");
+            const emailData = {
+                account: account,
+                user: user,
+                fee: fee,
+            };
+            dispatch(sendOtpCode(emailData));
+
+            navigate("/otp");
         }
     };
 
-    const [condition, setCondition] = useState(false);
+    const [condition, setCondition] = useState(true);
 
     useEffect(() => {
-        setCondition(!!fee);
+        if (fee) {
+            setCondition(false);
+        }
     }, [fee]);
 
     return (
         <div>
             <h1 className="heading">Make Transfer</h1>
-            <h1 className="heading">Current Balance: {account.balance}</h1>
+            <h1 className="heading">Current Balance: {account.balance}VND</h1>
 
             <div className="form-wrapper">
                 <form onSubmit={handleSubmit}>
@@ -69,13 +78,12 @@ function CreateTransfer() {
                             {/* Hiển thị các thông tin cần thiết từ fee */}
                             <p>Fee: {fee.amount}</p>
                             <p>Status: {fee.tuitionStatus ? "đã đóng" : "chưa đóng"}</p>
-                            {/* Thêm các thông tin khác cần hiển thị */}
                         </div>
                     )}
 
                     <button
                         type="submit"
-                        className={`btn ${condition ? "btn-red" : "btn-gray"}`}
+                        className={`btn ${condition ? "btn-gray" : "btn-red"}`}
                         disabled={condition}
                     >
                         Create Transfer

@@ -26,7 +26,7 @@ function Transfers() {
         <div>
             <h1>Current Balance: {account.balance}VND</h1>
             <h1 className="heading">Your Transfers</h1>
-            {transfers.transfers && transfers.transfers.length > 0 ?
+            {transfers && transfers.transfers && transfers.transfers.length > 0 ?
                 <>
                     <TransferList transfers={transfers.transfers} user={user} />
                 </>

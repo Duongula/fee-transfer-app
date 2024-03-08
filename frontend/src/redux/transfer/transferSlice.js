@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const initialState = {
     transfers: [],
+    otps: null,
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -40,6 +41,23 @@ export const getTransfers = createAsyncThunk("transfer/getTransfers", async (_, 
         return data;
     } catch (error) {
         console.log(error.message);
+        return thunkAPI.rejectWithValue("Something went wrong");
+    }
+})
+
+export const sendOtpCode = createAsyncThunk("transfer/sendOtpCode", async (dataSend, thunkAPI) => {
+    try {
+        const response = await fetch('/transfer/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataSend)
+        })
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error.message)
         return thunkAPI.rejectWithValue("Something went wrong");
     }
 })
@@ -85,6 +103,20 @@ const transferSlice = createSlice({
                 state.transfers = action.payload;
             })
             .addCase(getTransfers.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(sendOtpCode.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(sendOtpCode.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.otps = action.payload;
+            })
+            .addCase(sendOtpCode.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
                 state.isError = true;

@@ -1,4 +1,4 @@
-
+const moment = require("moment");
 const jwt = require("jsonwebtoken");
 
 const generateAccountNumber = () => {
@@ -38,10 +38,9 @@ const generateTransferCode = () => {
 
 const calculateExpirationTime = () => {
     const expirationMinutes = 1; // Thời gian hết hạn tính bằng phút
-    const expirationTime = new Date();
-    expirationTime.setTime(expirationTime.getTime() + expirationMinutes * 60 * 1000); // Thêm số phút vào thời gian hiện tại
-
-    return expirationTime;
+    const currentTime = moment();
+    const expirationTime = currentTime.add(expirationMinutes, 'minutes');
+    return expirationTime.unix();
 }
 
 module.exports = {

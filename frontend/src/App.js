@@ -7,7 +7,7 @@ import Header from "./component/Header";
 import Dashboard from "./Pages/Dashboard";
 import CreateTransfer from "./Pages/CreateTransfer";
 import Transfers from './Pages/Transfers';
-
+import OtpPage from './Pages/OtpPage';
 
 
 function App() {
@@ -18,10 +18,11 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" exact element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/register" exact element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateTransfer />} />
+          <Route path="/otp" element={<OtpPage />} />
           <Route path="/transfer" exact element={<Transfers />} />
         </Routes>
       </Router>

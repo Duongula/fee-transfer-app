@@ -11,8 +11,12 @@ const transferSchema = new mongoose.Schema({
         required: true,
         ref: "User"
     },
+    otpCode: {
+        type: String
+    },
     amount: {
-        type: Number
+        type: Number,
+        required: true,
     }
 }, {
     timestamps: true,

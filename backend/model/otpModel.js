@@ -8,12 +8,11 @@ const otpSchema = new mongoose.Schema({
         required: true
     },
     otpCode: {
-        type: Number,
-        required: true
-    },
-    exprirationTime: {
         type: String,
         required: true
+    },
+    expirationTime: {
+        type: String,
     },
     isUsed: {
         type: Boolean,
@@ -25,8 +24,8 @@ const otpSchema = new mongoose.Schema({
 })
 
 otpSchema.pre('save', function (next) {
-    if (!this.isModified('exprirationTime')) {
-        this.exprirationTime = calculateExpirationTime();
+    if (!this.isModified('expirationTime')) {
+        this.expirationTime = calculateExpirationTime();
     }
     next();
 })

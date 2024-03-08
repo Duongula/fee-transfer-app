@@ -1,5 +1,5 @@
 require('dotenv').config();
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
 let sendSimpleEmail = async (dataSend) => {
     let transporter = nodemailer.createTransport({
@@ -23,7 +23,7 @@ let sendSimpleEmail = async (dataSend) => {
 let getBodyHTMLEmail = (dataSend) => {
     let result = `
         <div>
-        <p>Mã OTP xác thực giao dịch là ${dataSend.otpCode}!</p>
+        <p>Mã OTP xác thực giao dịch là ${dataSend.otpCode}</p>
         <p>Hiệu lực của mã là 1 phút.</p>
         <p>Chi tiết giao dịch: Chuyển khoản nhanh qua sô TK, số tiền ${dataSend.amount}</p>
         <p>Vui lòng nhập mã xác thực để hoàn tất quá trình giao dịch.</p>
