@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 function Register() {
 
     const { user, isSuccess } = useSelector(state => state.user)
-    console.log();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -16,6 +15,7 @@ function Register() {
         name: "",
         email: "",
         password: "",
+        phoneNumber: "",
     });
 
     useEffect(() => {
@@ -24,7 +24,7 @@ function Register() {
         }
     }, [user, isSuccess])
 
-    const { name, email, password } = formData;
+    const { name, email, password, phoneNumber } = formData;
 
     const handleChange = (e) => {
         setFormData(prev => ({
@@ -36,7 +36,7 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch(registerUser({
-            name, email, password
+            name, email, password, phoneNumber
         }))
     }
 
@@ -61,6 +61,12 @@ function Register() {
                     <div className="input-group">
                         <label htmlFor="name">Password</label>
                         <input type="password" name="password" id="password" placeholder="Enter your password" value={password}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="phoneNumber">Phone number</label>
+                        <input type="phoneNumber" name="phoneNumber" id="phoneNumber" placeholder="Enter your phone number" value={phoneNumber}
                             onChange={handleChange}
                         />
                     </div>

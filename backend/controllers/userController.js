@@ -12,11 +12,12 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, phoneNumber } = req.body;
         const user = await User.create({
             name,
             email,
-            password
+            password,
+            phoneNumber
         });
 
         // create the account

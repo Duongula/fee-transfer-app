@@ -1,8 +1,6 @@
 
 
 function TransferItem({ transfer, user }) {
-    console.log("con", transfer)
-    console.log("user", user)
 
     const name = transfer.receiverId.name;
     const username = user.name;
@@ -11,7 +9,7 @@ function TransferItem({ transfer, user }) {
     return (
         <div>
             <h2>
-                {senderName === username ? `To: ${name}` : `From: ${senderName}`} - {`$ ${transfer.amount}`}
+                {senderName === username ? `To: ${name}` : `From: ${senderName}`} - {`${transfer.amount}VND`}
             </h2>
         </div>
     )

@@ -23,8 +23,31 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET);
 }
 
+const generateTransferCode = () => {
+    const length = 6;
+    const characters = '0123456789';
+
+    let code = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        code += characters.charAt(randomIndex);
+    }
+
+    return code;
+}
+
+const calculateExpirationTime = () => {
+    const expirationMinutes = 1; // Thời gian hết hạn tính bằng phút
+    const expirationTime = new Date();
+    expirationTime.setTime(expirationTime.getTime() + expirationMinutes * 60 * 1000); // Thêm số phút vào thời gian hiện tại
+
+    return expirationTime;
+}
+
 module.exports = {
     generateAccountNumber,
     generatePin,
-    generateToken
+    generateToken,
+    generateTransferCode,
+    calculateExpirationTime
 }

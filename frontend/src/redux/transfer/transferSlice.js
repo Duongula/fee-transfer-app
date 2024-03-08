@@ -11,12 +11,17 @@ const initialState = {
 // create transfer
 export const createTransfer = createAsyncThunk("transfer/create", async (transferData, thunkAPI) => {
     try {
+        const dataTransfer = {
+            name: "Dai hoc Ton Duc Thang",
+            accountNumber: "1709204",
+            data: transferData
+        }
         const response = await fetch('/transfer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(transferData)
+            body: JSON.stringify(dataTransfer)
         })
         const data = await response.json();
         return data;
@@ -59,7 +64,12 @@ const transferSlice = createSlice({
             .addCase(createTransfer.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.transfers = [...state.transfers, action.payload];
+                if (Array.isArray(action.payload)) {
+                    state.transfers = [...state.transfers, ...action.payload];
+                } else {
+                    // Handle non-iterable payload, e.g., assign it directly to state.transfers
+                    state.transfers = [...state.transfers, action.payload];
+                }
             })
             .addCase(createTransfer.rejected, (state, action) => {
                 state.isLoading = false;

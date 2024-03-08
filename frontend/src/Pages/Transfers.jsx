@@ -12,8 +12,6 @@ function Transfers() {
     const { transfers } = useSelector(state => state.transfer);
     const { user } = useSelector(state => state.user);
     const { account } = useSelector(state => state.account);
-    console.log("cha", useSelector(state => state.transfer))
-    // console.log("cha acc", account)
 
     useEffect(() => {
         if (!user) {
@@ -26,7 +24,7 @@ function Transfers() {
 
     return (
         <div>
-            <h1>Current Balance: {account.balance}</h1>
+            <h1>Current Balance: {account.balance}VND</h1>
             <h1 className="heading">Your Transfers</h1>
             {transfers.transfers && transfers.transfers.length > 0 ?
                 <>

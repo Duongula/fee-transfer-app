@@ -1,6 +1,9 @@
+import emailController from "../controllers/emailController";
 const User = require("../model/userModel");
 const Account = require("../model/accountModel");
 const Transfer = require("../model/transferModel");
+const Fee = require("../model/feeModel");
+const { generateTransferCode } = require("../utils/helper");
 
 // make transfer
 const makeTransfer = async (req, res) => {
@@ -8,7 +11,7 @@ const makeTransfer = async (req, res) => {
     // account details of receiver - name, account Number
     // user should have funds in account
 
-    const { name, accountNumber, amount } = req.body;
+    const { name, accountNumber, data } = req.body;
     const checkAccountNumber = await Account.findOne({ accountNumber });
     if (!checkAccountNumber) {
         return res.status(400).json({ message: "Account number not found" });
@@ -18,6 +21,8 @@ const makeTransfer = async (req, res) => {
     if (!sender) {
         return res.status(400).json({ message: "Sender account not found" });
     }
+
+    const amount = data.amount;
     if (sender.balance < amount) {
         return res.status(400).json({ message: "Insufficient funds" });
     }
@@ -27,6 +32,7 @@ const makeTransfer = async (req, res) => {
     if (!receiver.user.name.toLowerCase() === name.toLowerCase()) {
         return res.status(400).json({ message: "Receiver name does not match account" })
     }
+
 
     receiver.balance += amount;
     sender.balance -= amount;
@@ -39,8 +45,9 @@ const makeTransfer = async (req, res) => {
         receiverId: receiver.user._id,
         amount,
     })
-
     transfer.save();
+    // update tuitionStatus
+    await Fee.findOneAndUpdate({ _id: data._id }, { tuitionStatus: true });
 
     res.json({ transfer });
 }
@@ -59,7 +66,7 @@ const getTransfers = async (req, res) => {
         })
             .populate("senderId")
             .populate("receiverId")
-            .sort({ createAt: -1 })
+            .sort({ createdAt: -1 })
         if (!transfers) {
             return res.status(404).json({ message: 'No transfers found' });
         }
@@ -71,8 +78,25 @@ const getTransfers = async (req, res) => {
 
 }
 
+const sendOtpCode = async (req, res) => {
+    try {
+        await emailController.sendSimpleEmail({
+            recieverEmail: req.body.email,
+            amount: req.body.amount,
+            otp: generateTransferCode()
+        })
+
+        return res.status(200).json({ data });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Something went wrong' });
+    }
+}
+
 module.exports = {
     makeTransfer,
     deleteTransfers,
     getTransfers,
+    sendOtpCode
 }
