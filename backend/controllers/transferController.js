@@ -13,11 +13,11 @@ const makeTransfer = async (req, res) => {
     // account details of receiver - name, account Number
     // user should have funds in account
 
-    const { name, accountNumber, data } = req.body;
+    const { otp, fee, selectedUniversity } = req.body;
 
     const currentTime = moment().unix();
 
-    const checkOtp = await Otp.findOne({ otpCode: data.otp });
+    const checkOtp = await Otp.findOne({ otpCode: otp });
 
     if (!checkOtp) {
         return res.status(400).json({ message: "OTP not found" });
@@ -30,6 +30,7 @@ const makeTransfer = async (req, res) => {
     checkOtp.isUsed = true;
     await checkOtp.save();
 
+    let accountNumber = selectedUniversity.accountNumber;
     const checkAccountNumber = await Account.findOne({ accountNumber });
     if (!checkAccountNumber) {
         return res.status(400).json({ message: "Account number not found" });
@@ -40,14 +41,14 @@ const makeTransfer = async (req, res) => {
         return res.status(400).json({ message: "Sender account not found" });
     }
 
-    const amount = data.fee.amount;
+    const amount = fee.amount;
     if (sender.balance < amount) {
         return res.status(400).json({ message: "Insufficient funds" });
     }
 
     const receiver = await Account.findOne({ accountNumber }).populate("user");
 
-    if (!receiver.user.name.toLowerCase() === name.toLowerCase()) {
+    if (!receiver.user.name.toLowerCase() === selectedUniversity.user.name.toLowerCase()) {
         return res.status(400).json({ message: "Receiver name does not match account" })
     }
 
@@ -61,12 +62,12 @@ const makeTransfer = async (req, res) => {
     const transfer = await Transfer.create({
         senderId: req.user._id,
         receiverId: receiver.user._id,
-        otpCode: data.otp,
+        otpCode: otp,
         amount,
     })
     transfer.save();
     // update tuitionStatus
-    await Fee.findOneAndUpdate({ _id: data.fee._id }, { tuitionStatus: true });
+    await Fee.findOneAndUpdate({ _id: fee._id }, { tuitionStatus: true });
 
     res.json({ transfer });
 }
@@ -87,7 +88,7 @@ const getTransfers = async (req, res) => {
             .populate("receiverId")
             .sort({ createdAt: -1 })
         if (!transfers) {
-            return res.status(404).json({ message: 'No transfers found' });
+            return res.status(200).json({ message: 'No transfers found' });
         }
         return res.status(200).json({ transfers });
     } catch (error) {
@@ -120,9 +121,26 @@ const sendOtpCode = async (req, res) => {
     }
 }
 
+const sendInvoice = async (req, res) => {
+    try {
+        await emailController.sendInvoiceEmail({
+            recieverEmail: req.body.user.email,
+            studentName: req.body.fee.student.studentName,
+            transferId: req.body.transfer.transfer._id,
+        })
+
+        return res.status(200).json({ message: 'Successfully paid tuition fees' });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Something went wrong' });
+    }
+}
+
 module.exports = {
     makeTransfer,
     deleteTransfers,
     getTransfers,
-    sendOtpCode
+    sendOtpCode,
+    sendInvoice
 }

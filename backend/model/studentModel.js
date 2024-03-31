@@ -9,6 +9,14 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    studentClass: {
+        type: String,
+        required: true
+    },
+    typeTraining: {
+        type: String,
+        required: true
+    }
 }, {
     timestamps: true,
 })

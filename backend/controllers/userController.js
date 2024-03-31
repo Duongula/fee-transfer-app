@@ -59,7 +59,7 @@ const loginUser = async (req, res) => {
         // send back user
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
         res.cookie("jwt", token);
-        res.status(200).json({ _id: user._id, email: user.email, name: user.name, createAt: user.createdAt, updatedAt: user.updatedAt });
+        res.status(200).json(user);
 
     } catch (error) {
         console.log(error.message);

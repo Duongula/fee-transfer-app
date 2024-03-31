@@ -2,8 +2,9 @@ import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getTransfers } from "../redux/transfer/transferSlice";
-import TransferList from "../component/TransferList"
 import { getAccount } from "../redux/account/accountSlice";
+import TransferList from "../component/TransferList"
+
 
 function Transfers() {
 
@@ -19,16 +20,17 @@ function Transfers() {
         }
         dispatch(getTransfers())
         dispatch(getAccount())
+    }, [user, dispatch, navigate])
 
-    }, [user])
+    // console.log("data transfer", transfers)
 
     return (
         <div>
             <h1>Current Balance: {account.balance}VND</h1>
             <h1 className="heading">Your Transfers</h1>
-            {transfers && transfers.transfers && transfers.transfers.length > 0 ?
+            {transfers && transfers.length > 0 ?
                 <>
-                    <TransferList transfers={transfers.transfers} user={user} />
+                    <TransferList transfers={transfers} user={user} />
                 </>
                 :
                 <>

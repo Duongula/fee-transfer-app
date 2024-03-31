@@ -19,6 +19,11 @@ const accountSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    bankAccountType: {
+        type: String,
+        required: true,
+        default: "Personal"
     }
 })
 

@@ -12,8 +12,20 @@ export const getAccount = createAsyncThunk("account/getAccount", async (_, thunk
     }
 })
 
+export const getUniversities = createAsyncThunk("account/getUniversities", async (_, thunkAPI) => {
+    try {
+        const res = await fetch('/account/get-account-uni');
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.log(error.message);
+        return thunkAPI.rejectWithValue(error.message);
+    }
+});
+
 const initialState = {
     account: {},
+    universities: [],
     isLoading: false,
     isSuccess: false,
     isError: false,
@@ -33,9 +45,10 @@ const accountSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(getAccount.pending, (state) => {
-            state.isLoading = true;
-        })
+        builder
+            .addCase(getAccount.pending, (state) => {
+                state.isLoading = true;
+            })
             .addCase(getAccount.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
@@ -47,6 +60,20 @@ const accountSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+            .addCase(getUniversities.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getUniversities.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.universities = action.payload;
+            })
+            .addCase(getUniversities.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = false;
+                state.isError = true;
+                state.message = action.payload;
+            });
     }
 })
 

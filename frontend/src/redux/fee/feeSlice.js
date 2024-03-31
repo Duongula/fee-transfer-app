@@ -43,9 +43,10 @@ const feeSlice = createSlice({
     },
     reducers: {
         clearFee: (state) => {
-            state.fee = null;
-            state.loading = false;
-            state.error = null;
+            return {
+                ...state,
+                fee: null,
+            };
         },
     },
     extraReducers: (builder) => {

@@ -27,9 +27,23 @@ const getAccount = async (req, res) => {
     }
 }
 
+const getAccountUni = async (req, res) => {
+    try {
+        const accountUni = await Account.find({ bankAccountType: "Corporate" }).populate("user");
+        if (!accountUni) {
+            return res.status(404).json({ message: "Account not found" });
+        }
+        res.status(200).json(accountUni);
+    } catch (error) {
+        console.log(error.message);
+        res.status(400).json({ message: "Internal server error" });
+    }
+}
+
 
 module.exports = {
     getAccounts,
     deleteAccounts,
-    getAccount
+    getAccount,
+    getAccountUni
 }

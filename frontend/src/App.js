@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import "./App.scss";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Home from "./Pages/Home";
@@ -25,6 +27,7 @@ function App() {
           <Route path="/otp" element={<OtpPage />} />
           <Route path="/transfer" exact element={<Transfers />} />
         </Routes>
+        <ToastContainer />
       </Router>
     </div>
   );

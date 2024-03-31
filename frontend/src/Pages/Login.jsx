@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../redux/user/userSlice";
 import { useSelector } from "react-redux";
-
+import { toast } from 'react-toastify';
 
 function Login() {
 
@@ -33,6 +33,7 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        toast.success("dang nhap thanh cong")
         dispatch(loginUser({ email, password }))
     }
 

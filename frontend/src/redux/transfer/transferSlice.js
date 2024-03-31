@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from 'react-toastify';
 
 const initialState = {
     transfers: [],
@@ -12,19 +13,19 @@ const initialState = {
 // create transfer
 export const createTransfer = createAsyncThunk("transfer/create", async (transferData, thunkAPI) => {
     try {
-        const dataTransfer = {
-            name: "Dai hoc Ton Duc Thang",
-            accountNumber: "1709204",
-            data: transferData
-        }
         const response = await fetch('/transfer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(dataTransfer)
+            body: JSON.stringify(transferData)
         })
         const data = await response.json();
+        if (response.ok) {
+            toast.success(data.message);
+        } else {
+            toast.error(data.message);
+        }
         return data;
     } catch (error) {
         console.log(error.message)
@@ -37,7 +38,7 @@ export const getTransfers = createAsyncThunk("transfer/getTransfers", async (_, 
     try {
         const response = await fetch('/transfer');
         const data = await response.json();
-        console.log(data);
+        // console.log("get trans", data);
         return data;
     } catch (error) {
         console.log(error.message);
@@ -55,6 +56,33 @@ export const sendOtpCode = createAsyncThunk("transfer/sendOtpCode", async (dataS
             body: JSON.stringify(dataSend)
         })
         const data = await response.json();
+        if (response.ok) {
+            toast.success(data.message);
+        } else {
+            toast.error(data.message);
+        }
+        return data;
+    } catch (error) {
+        console.log(error.message)
+        return thunkAPI.rejectWithValue("Something went wrong");
+    }
+})
+
+export const sendInvoice = createAsyncThunk("transfer/sendInvoice", async (dataSend, thunkAPI) => {
+    try {
+        const response = await fetch('/transfer/send-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataSend)
+        })
+        const data = await response.json();
+        if (response.ok) {
+            toast.success(data.message);
+        } else {
+            toast.error(data.message);
+        }
         return data;
     } catch (error) {
         console.log(error.message)
@@ -82,12 +110,10 @@ const transferSlice = createSlice({
             .addCase(createTransfer.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                if (Array.isArray(action.payload)) {
-                    state.transfers = [...state.transfers, ...action.payload];
-                } else {
-                    // Handle non-iterable payload, e.g., assign it directly to state.transfers
-                    state.transfers = [...state.transfers, action.payload];
-                }
+                const payloadArray = Array.isArray(action.payload) ? action.payload : [action.payload.transfer];
+                // console.log("payload", payloadArray);
+                // console.log("state", state);
+                state.transfers.push(...payloadArray);
             })
             .addCase(createTransfer.rejected, (state, action) => {
                 state.isLoading = false;
@@ -100,7 +126,7 @@ const transferSlice = createSlice({
             .addCase(getTransfers.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.transfers = action.payload;
+                state.transfers = Array.isArray(action.payload.transfers) ? action.payload.transfers : [action.payload.transfers];
             })
             .addCase(getTransfers.rejected, (state, action) => {
                 state.isLoading = false;
@@ -117,6 +143,19 @@ const transferSlice = createSlice({
                 state.otps = action.payload;
             })
             .addCase(sendOtpCode.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(sendInvoice.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(sendInvoice.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+            })
+            .addCase(sendInvoice.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
                 state.isError = true;

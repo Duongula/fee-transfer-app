@@ -16,10 +16,12 @@ const getStudent = async (req, res) => {
 
 const createStudent = async (req, res) => {
     try {
-        const { mssv, studentName } = req.body;
+        const { mssv, studentName, studentClass, typeTraining } = req.body;
         const student = await Student.create({
             mssv,
             studentName,
+            studentClass,
+            typeTraining
         });
 
         res.status(201).json({ student });

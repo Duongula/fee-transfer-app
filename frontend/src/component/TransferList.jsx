@@ -1,6 +1,7 @@
 import TransferItem from './TransferItem';
 
 function TransferList({ transfers, user }) {
+    // console.log("user list", user)
 
     return (
         <div>

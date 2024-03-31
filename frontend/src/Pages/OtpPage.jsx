@@ -1,49 +1,91 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { createTransfer } from "../redux/transfer/transferSlice";
+import { useLocation } from "react-router-dom";
+import { createTransfer, sendOtpCode, getTransfers, sendInvoice } from "../redux/transfer/transferSlice";
 import { useNavigate } from "react-router-dom"
-import { sendOtpCode } from "../redux/transfer/transferSlice";
+import { getAccount } from "../redux/account/accountSlice";
+import { clearFee } from "../redux/fee/feeSlice";
+import Loader from "../component/loader/Loader";
+import { toast } from 'react-toastify';
 
 function OtpPage() {
     const { fee } = useSelector(state => state.fee);
     const { user } = useSelector(state => state.user);
     const { account } = useSelector(state => state.account);
-    const { otps } = useSelector(state => state.transfer);
+    const [loading, setLoading] = useState(false);
     const [otp, setOtp] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const selectedUniversity = location.state?.selectedUniversity;
 
-    const handleSubmit = (event) => {
+    const handleNavigation = () => {
+        navigate("/transfer", { replace: true }, () => {
+            // Callback function được gọi sau khi chuyển trang thành công
+            dispatch(getTransfers());
+            dispatch(getAccount());
+        });
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const transferData = {
             otp: otp,
             fee: fee,
+            selectedUniversity: selectedUniversity,
         };
-        dispatch(createTransfer(transferData)); // Dispatch createTransfer với mã OTP và fee
-        navigate("/transfer");
+        setLoading(true);
+        await dispatch(createTransfer(transferData))
+            .then((response) => {
+                console.log("check transfer id", response.payload);
+                dispatch(sendInvoice({
+                    transfer: response.payload,
+                    fee: fee,
+                    user: user,
+                }));
+                dispatch(clearFee());
+                handleNavigation();
+            })
+            .catch((error) => {
+                toast.error(error.message);
+            })
+            .finally(() => {
+                // Khi hoàn thành hoặc gặp lỗi, set loading thành false
+                setLoading(false);
+            });
     };
 
-    const handleResendOTP = async () => {
+    const handleResendOTP = () => {
         const emailData = {
-            account: account.accountNumber,
-            email: user.email,
-            amount: fee.amount,
+            account: account,
+            user: user,
+            fee: fee,
         };
-        await dispatch(sendOtpCode(emailData));
+        console.log("đã gửi lại otp");
+        dispatch(sendOtpCode(emailData))
+            .then(() => {
+                toast.success("Gửi lại OTP thành công");
+            })
+            .catch((error) => {
+                toast.error("Đã xảy ra lỗi khi gửi lại OTP");
+            });
     };
 
     // handle không được bấm gửi lại khi mã cũ còn hạn
     return (
         <div>
-            <h1>Nhập OTP</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    OTP:
-                    <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} />
-                </label>
-                <button onClick={handleResendOTP}>Gửi lại OTP</button>
-                <button type="submit">Xác nhận</button>
-            </form>
+            {loading && <Loader />}
+            <h1 className="heading">Nhập OTP</h1>
+            <div className="form-wrapper">
+                <form onSubmit={handleSubmit}>
+                    <div className='input-group'>
+                        <label>OTP:</label>
+                        <input className='form-control' type="text" value={otp} onChange={(e) => setOtp(e.target.value)} />
+                    </div>
+                    <button type="submit" className="btn">Xác nhận</button>
+                    <button type="button" onClick={handleResendOTP} className="btn">Gửi lại OTP</button>
+                </form>
+            </div>
         </div>
     );
 }
