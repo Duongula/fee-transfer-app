@@ -58,8 +58,6 @@ function CreateTransfer() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (condition === false) {
-            // Check if the entered student number belongs to the selected university
-
             const emailData = {
                 account: account,
                 user: user,
@@ -90,13 +88,14 @@ function CreateTransfer() {
 
     useEffect(() => {
         setCondition(true);
-        if (fee) {
-            const studentUniversity = fee.university === selectedUniversity.value._id;
+        if (fee && selectedUniversity) {
+            const studentUniversity = selectedUniversity && fee.university === selectedUniversity.value._id;
+
             if (fee && fee.tuitionStatus === false && studentUniversity) {
                 setCondition(false);
             }
         }
-    }, [fee]);
+    }, [fee, selectedUniversity]);
 
     useEffect(() => {
         dispatch(getUniversities())
@@ -118,7 +117,7 @@ function CreateTransfer() {
         setSelectedUniversity(selectedOption);
     };
 
-    const isUniversitySelected = selectedUniversity !== null;
+    let isUniversitySelected = selectedUniversity !== null;
 
     return (
         <div>
@@ -146,7 +145,7 @@ function CreateTransfer() {
                                 disabled={!isUniversitySelected}
                             />
                         </div>
-                        {feeInfo && feeInfo !== null && fee.university === selectedUniversity.value._id && (
+                        {feeInfo && feeInfo !== null && feeInfo.university === selectedUniversity.value._id && (
                             <div>
                                 <p>Student name: {feeInfo.student.studentName}</p>
                                 <p>Fee: {feeInfo.amount}VND</p>

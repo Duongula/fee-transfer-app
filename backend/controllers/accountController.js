@@ -1,7 +1,7 @@
 const Account = require("../model/accountModel");
 const getAccounts = async (req, res) => {
     try {
-        const accounts = await Account.find().populate("user");
+        const accounts = await Account.find().populate("user", "-password");
         res.status(200).json(accounts);
     } catch (error) {
         console.log(error.message);
@@ -29,7 +29,7 @@ const getAccount = async (req, res) => {
 
 const getAccountUni = async (req, res) => {
     try {
-        const accountUni = await Account.find({ bankAccountType: "Corporate" }).populate("user");
+        const accountUni = await Account.find({ bankAccountType: "Corporate" }).populate("user", "-password");
         if (!accountUni) {
             return res.status(404).json({ message: "Account not found" });
         }

@@ -11,10 +11,18 @@ const transferSchema = new mongoose.Schema({
         required: true,
         ref: "User"
     },
+    orderNumber: {
+        type: String,
+        required: true,
+    },
     otpCode: {
         type: String
     },
     amount: {
+        type: Number,
+        required: true,
+    },
+    chargeAmount: {
         type: Number,
         required: true,
     }

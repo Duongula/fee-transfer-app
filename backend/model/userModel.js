@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
         required: true
+    },
+    uniCode: {
+        type: String,
     }
 }, {
     timestamps: true,

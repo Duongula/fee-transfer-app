@@ -32,16 +32,16 @@ function OtpPage() {
         const transferData = {
             otp: otp,
             fee: fee,
-            selectedUniversity: selectedUniversity,
+            selectedUniversity: selectedUniversity.value,
         };
         setLoading(true);
         await dispatch(createTransfer(transferData))
             .then((response) => {
-                console.log("check transfer id", response.payload);
                 dispatch(sendInvoice({
                     transfer: response.payload,
                     fee: fee,
                     user: user,
+                    account: account,
                 }));
                 dispatch(clearFee());
                 handleNavigation();

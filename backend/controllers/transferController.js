@@ -9,9 +9,6 @@ const { generateTransferCode } = require("../utils/helper");
 
 // make transfer
 const makeTransfer = async (req, res) => {
-    // user should be authenticated
-    // account details of receiver - name, account Number
-    // user should have funds in account
 
     const { otp, fee, selectedUniversity } = req.body;
 
@@ -52,18 +49,21 @@ const makeTransfer = async (req, res) => {
         return res.status(400).json({ message: "Receiver name does not match account" })
     }
 
-
     receiver.balance += amount;
     sender.balance -= amount;
 
     await receiver.save();
     await sender.save();
 
+    const orderNumber = "0000" + accountNumber + currentTime;
+
     const transfer = await Transfer.create({
         senderId: req.user._id,
         receiverId: receiver.user._id,
+        orderNumber: orderNumber,
         otpCode: otp,
         amount,
+        chargeAmount: amount * 0.01,
     })
     transfer.save();
     // update tuitionStatus
@@ -123,11 +123,16 @@ const sendOtpCode = async (req, res) => {
 
 const sendInvoice = async (req, res) => {
     try {
-        await emailController.sendInvoiceEmail({
-            recieverEmail: req.body.user.email,
-            studentName: req.body.fee.student.studentName,
-            transferId: req.body.transfer.transfer._id,
-        })
+        const receiver = await Account.findOne({ user: req.body.transfer.transfer.receiverId }).populate("user", "-password");
+
+        await emailController.sendInvoiceEmail(
+            {
+                receiver,
+                transfer: req.body.transfer,
+                fee: req.body.fee,
+                user: req.body.user,
+                account: req.body.account,
+            })
 
         return res.status(200).json({ message: 'Successfully paid tuition fees' });
 
