@@ -7,6 +7,7 @@ import { getAccount } from "../redux/account/accountSlice";
 import { clearFee } from "../redux/fee/feeSlice";
 import Loader from "../component/loader/Loader";
 import { toast } from 'react-toastify';
+import './Otp.scss'
 
 function OtpPage() {
     const { fee } = useSelector(state => state.fee);
@@ -29,61 +30,64 @@ function OtpPage() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        if (otp.trim() === "") {
+            toast.error("Please enter the OTP.");
+            return;
+        }
         const transferData = {
             otp: otp,
-            fee: fee,
-            selectedUniversity: selectedUniversity.value,
+            idFee: fee._id,
+            selectedUniversityAccount: selectedUniversity.value.accountNumber,
         };
+        console.log("check transferData: ", transferData);
         setLoading(true);
         await dispatch(createTransfer(transferData))
             .then((response) => {
                 dispatch(sendInvoice({
                     transfer: response.payload,
                     fee: fee,
-                    user: user,
-                    account: account,
+                    receiverEmail: user.email,
+                    accountNumberSender: account.accountNumber,
                 }));
                 dispatch(clearFee());
                 handleNavigation();
             })
             .catch((error) => {
-                toast.error(error.message);
+                console.log(error.message);
             })
             .finally(() => {
-                // Khi hoàn thành hoặc gặp lỗi, set loading thành false
                 setLoading(false);
             });
     };
 
     const handleResendOTP = () => {
         const emailData = {
-            account: account,
-            user: user,
-            fee: fee,
+            account: account._id,
+            recieverEmail: user.email,
+            fee: fee.amount,
         };
         console.log("đã gửi lại otp");
         dispatch(sendOtpCode(emailData))
             .then(() => {
-                toast.success("Gửi lại OTP thành công");
+                toast.success("Resend OTP successfully");
             })
             .catch((error) => {
-                toast.error("Đã xảy ra lỗi khi gửi lại OTP");
+                toast.error("An error occurred while resending the OTP");
             });
     };
 
     // handle không được bấm gửi lại khi mã cũ còn hạn
     return (
-        <div>
+        <div className="wrapper-otp">
             {loading && <Loader />}
-            <h1 className="heading">Nhập OTP</h1>
+            <p className="email-text mb-3">Enter the code we just send on your email</p>
             <div className="form-wrapper">
                 <form onSubmit={handleSubmit}>
-                    <div className='input-group'>
-                        <label>OTP:</label>
+                    <div className='input-group mb-4'>
                         <input className='form-control' type="text" value={otp} onChange={(e) => setOtp(e.target.value)} />
                     </div>
-                    <button type="submit" className="btn">Xác nhận</button>
-                    <button type="button" onClick={handleResendOTP} className="btn">Gửi lại OTP</button>
+                    <button type="submit" className="btn btn-confirm">Confirm</button>
+                    <button type="button" onClick={handleResendOTP} className="btn btn-resend">Resend OTP</button>
                 </form>
             </div>
         </div>

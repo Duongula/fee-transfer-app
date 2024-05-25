@@ -51,8 +51,8 @@ let sendInvoiceEmail = async (dataSend) => {
 
     let info = await transporter.sendMail({
         from: '"ThuyDuong 👻" <httd343@gmail.com>', // sender address
-        to: dataSend.user.email, // list of receivers
-        subject: "Biên lai thanh toán", // Subject line
+        to: dataSend.receiverEmail, // receiver
+        subject: "Biên lai thanh toán",
         html: getBodyHTMLEInvoice(dataSend),
         attachments: [
             {
@@ -71,7 +71,7 @@ let getBodyHTMLEInvoice = (dataSend) => {
         <p>Thông tin giao dịch của khách hàng có:</p>
         <p>Ngày giao dịch: ${moment(dataSend.transfer.transfer.createdAt).format('DD-MM-YYYY')}.</p>
         <p>Số giao dịch: ${dataSend.transfer.transfer.orderNumber}</p>
-        <p>Tài khoản nguồn: ${dataSend.account.accountNumber}</p>
+        <p>Tài khoản nguồn: ${dataSend.accountNumberSender}</p>
         <p>Tài khoản hưởng: ${dataSend.receiver.accountNumber}</p>
         <p>Tên người hưởng: ${dataSend.receiver.user.name}</p>
         <p>Số tiền: ${dataSend.transfer.transfer.amount}</p>
@@ -89,16 +89,19 @@ const createCustomizedPDF = async (dataSend) => {
     const page = pdfDoc.addPage();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const textSize = 20;
-    const { transfer, account, receiver } = dataSend;
+    const { transfer, accountNumberSender, receiver, fee } = dataSend;
     const yStart = page.getHeight() - 50;
     const lineHeight = 20;
 
     page.drawText(`Ngay giao dich: ${moment(transfer.transfer.createdAt).format('DD-MM-YYYY')}`, { x: 50, y: yStart, size: textSize, font });
     page.drawText(`So giao dich: ${transfer.transfer.orderNumber}`, { x: 50, y: yStart - lineHeight, size: textSize, font });
-    page.drawText(`Tai khoan nguon: ${account.accountNumber}`, { x: 50, y: yStart - 2 * lineHeight, size: textSize, font });
+    page.drawText(`Tai khoan nguon: ${accountNumberSender}`, { x: 50, y: yStart - 2 * lineHeight, size: textSize, font });
     page.drawText(`Tai khoan huong: ${receiver.accountNumber}`, { x: 50, y: yStart - 3 * lineHeight, size: textSize, font });
-    page.drawText(`So tien: ${transfer.transfer.amount}`, { x: 50, y: yStart - 5 * lineHeight, size: textSize, font });
-    page.drawText(`So tien phi: ${transfer.transfer.chargeAmount}`, { x: 50, y: yStart - 6 * lineHeight, size: textSize, font });
+    page.drawText(`Ho ten sinh vien: ${fee.student.studentName}`, { x: 50, y: yStart - 5 * lineHeight, size: textSize, font });
+    page.drawText(`Ma so sinh vien: ${fee.student.mssv}`, { x: 50, y: yStart - 6 * lineHeight, size: textSize, font });
+    page.drawText(`Lop: ${fee.student.studentClass}`, { x: 50, y: yStart - 7 * lineHeight, size: textSize, font });
+    page.drawText(`So tien: ${transfer.transfer.amount}`, { x: 50, y: yStart - 8 * lineHeight, size: textSize, font });
+    page.drawText(`So tien phi: ${transfer.transfer.chargeAmount}`, { x: 50, y: yStart - 9 * lineHeight, size: textSize, font });
 
 
     return await pdfDoc.save();

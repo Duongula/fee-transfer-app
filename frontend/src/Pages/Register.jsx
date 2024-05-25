@@ -42,8 +42,6 @@ function Register() {
 
     return (
         <div className='heading'>
-            <h1 className="heading">Register</h1>
-            <p className="sub-heading">Please create an account</p>
             <div className="form-wrapper">
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">

@@ -10,7 +10,7 @@ const { generateTransferCode } = require("../utils/helper");
 // make transfer
 const makeTransfer = async (req, res) => {
 
-    const { otp, fee, selectedUniversity } = req.body;
+    const { otp, idFee, selectedUniversityAccount } = req.body;
 
     const currentTime = moment().unix();
 
@@ -27,8 +27,7 @@ const makeTransfer = async (req, res) => {
     checkOtp.isUsed = true;
     await checkOtp.save();
 
-    let accountNumber = selectedUniversity.accountNumber;
-    const checkAccountNumber = await Account.findOne({ accountNumber });
+    const checkAccountNumber = await Account.findOne({ accountNumber: selectedUniversityAccount });
     if (!checkAccountNumber) {
         return res.status(400).json({ message: "Account number not found" });
     }
@@ -38,16 +37,18 @@ const makeTransfer = async (req, res) => {
         return res.status(400).json({ message: "Sender account not found" });
     }
 
-    const amount = fee.amount;
+    const feeInfo = await Fee.findOne({ _id: idFee });
+
+    const amount = feeInfo.amount;
     if (sender.balance < amount) {
         return res.status(400).json({ message: "Insufficient funds" });
     }
 
-    const receiver = await Account.findOne({ accountNumber }).populate("user");
+    const receiver = await Account.findOne({ accountNumber: selectedUniversityAccount }).populate("user");
 
-    if (!receiver.user.name.toLowerCase() === selectedUniversity.user.name.toLowerCase()) {
-        return res.status(400).json({ message: "Receiver name does not match account" })
-    }
+    // if (!receiver.user.name.toLowerCase() === selectedUniversity.user.name.toLowerCase()) {
+    //     return res.status(400).json({ message: "Receiver name does not match account" })
+    // }
 
     receiver.balance += amount;
     sender.balance -= amount;
@@ -55,7 +56,7 @@ const makeTransfer = async (req, res) => {
     await receiver.save();
     await sender.save();
 
-    const orderNumber = "0000" + accountNumber + currentTime;
+    const orderNumber = "0000" + selectedUniversityAccount + currentTime;
 
     const transfer = await Transfer.create({
         senderId: req.user._id,
@@ -67,7 +68,7 @@ const makeTransfer = async (req, res) => {
     })
     transfer.save();
     // update tuitionStatus
-    await Fee.findOneAndUpdate({ _id: fee._id }, { tuitionStatus: true });
+    await Fee.findOneAndUpdate({ _id: idFee }, { tuitionStatus: true });
 
     res.json({ transfer });
 }
@@ -103,13 +104,13 @@ const sendOtpCode = async (req, res) => {
         const otpCode = generateTransferCode();
 
         const otpData = await Otp.create({
-            account: req.body.account._id,
+            account: req.body.account,
             otpCode: otpCode,
         })
 
         await emailController.sendSimpleEmail({
-            recieverEmail: req.body.user.email,
-            amount: req.body.fee.amount,
+            recieverEmail: req.body.recieverEmail,
+            amount: req.body.fee,
             otpCode: otpCode
         })
 
@@ -130,8 +131,8 @@ const sendInvoice = async (req, res) => {
                 receiver,
                 transfer: req.body.transfer,
                 fee: req.body.fee,
-                user: req.body.user,
-                account: req.body.account,
+                receiverEmail: req.body.receiverEmail,
+                accountNumberSender: req.body.accountNumberSender,
             })
 
         return res.status(200).json({ message: 'Successfully paid tuition fees' });

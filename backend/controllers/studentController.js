@@ -3,7 +3,7 @@ const Student = require('../model/studentModel');
 
 const getStudent = async (req, res) => {
     try {
-        const student = await Student.findOne({ mssv: req.mssv });
+        const student = await Student.findOne({ mssv: req.query.mssv });
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }

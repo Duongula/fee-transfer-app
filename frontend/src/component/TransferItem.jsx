@@ -1,4 +1,4 @@
-
+import '../Pages/TransferList.scss'
 
 function TransferItem({ transfer, user }) {
 
@@ -8,9 +8,9 @@ function TransferItem({ transfer, user }) {
 
     return (
         <div>
-            <h2>
+            <p className={senderName === username ? 'red' : 'green'}>
                 {senderName === username ? `To: ${name}` : `From: ${senderName}`} - {`${transfer.amount}VND`}
-            </h2>
+            </p>
         </div>
     )
 }

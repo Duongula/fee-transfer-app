@@ -6,6 +6,7 @@ const moment = require('moment');
 const getFee = async (req, res) => {
     try {
         const { studentId, date } = req.query;
+        console.log(studentId, date);
         const student = await Student.findOne({ mssv: studentId });
         if (!student) {
             return res.status(200).json(null);

@@ -19,7 +19,7 @@ function Header() {
     return (
         <header className="main-header">
             <Link to="/" className="logo">
-                <h1>MoneyTransfer</h1>
+                <h1 style={{ color: '#273751', fontWeight: 'bold' }}>MoneyTransfer</h1>
             </Link>
             <nav>
                 {user ?
@@ -27,13 +27,13 @@ function Header() {
                         <Link to="/dashboard">Dashboard</Link>
                         <Link to="/transfer">Transfers</Link>
                         <Link to="/create">Create</Link>
-                        <button onClick={handleLogout}>Logout</button>
+                        <button onClick={handleLogout} style={{ color: 'white', backgroundColor: '#273751', padding: '5px 20px', borderRadius: '10px' }}>Logout</button>
                     </>
                     :
                     <>
                         <Link to="/">Home</Link>
-                        <Link to="/login">Login</Link>
-                        <Link to="/register">Register</Link>
+                        <Link to="/login" >Login</Link>
+                        <Link to="/register" style={{ color: 'white', backgroundColor: '#273751', padding: '5px 20px', borderRadius: '10px' }}>Register</Link>
                     </>
                 }
             </nav>

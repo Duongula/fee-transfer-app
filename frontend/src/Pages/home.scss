@@ -1,0 +1,90 @@
+.heading {
+    font-family: sans-serif;
+    margin-top: 3rem;
+    font-size: 15px;
+    display: flex;
+
+    .left-content {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .title-content {
+            font-size: 50px;
+            font-weight: bold;
+            text-align: start !important;
+            color: #273751;
+        }
+
+        .send-money {
+            display: flex;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            padding: 10px;
+            border-radius: 5px;
+            width: 70%;
+            align-items: center;
+
+            .amount-input {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 30%;
+
+                p {
+                    margin: auto;
+                    font-weight: bold;
+                }
+            }
+
+            .flag-content {
+                display: flex;
+                justify-content: space-between;
+                width: 70%;
+
+                .flag-left {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .select-country {
+                        border: none;
+                    }
+
+                    .vl {
+                        border-left: 3px solid #f0f0f0;
+                        margin-right: 20px;
+                        height: 50px;
+                    }
+                }
+
+                button {
+                    background-color: #273751;
+                    color: white;
+                    border: none;
+                    height: 60px;
+                    padding: 20px 30px;
+                }
+
+            }
+
+        }
+
+        .safety-guarantee {
+            display: flex;
+            justify-content: flex-start !important;
+            text-align: start !important;
+
+            .safety-features {}
+
+            a {
+                text-decoration: none;
+                color: #8083D3;
+            }
+        }
+    }
+
+    .right-content {
+        width: 50%;
+        height: 100%;
+    }
+}

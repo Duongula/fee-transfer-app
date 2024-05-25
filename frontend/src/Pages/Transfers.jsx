@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getTransfers } from "../redux/transfer/transferSlice";
 import { getAccount } from "../redux/account/accountSlice";
 import TransferList from "../component/TransferList"
-
+import './TransferList.scss'
+import { TbPigMoney } from "react-icons/tb";
 
 function Transfers() {
 
@@ -22,12 +23,10 @@ function Transfers() {
         dispatch(getAccount())
     }, [user, dispatch, navigate])
 
-    // console.log("data transfer", transfers)
-
     return (
-        <div>
-            <h1>Current Balance: {account.balance}VND</h1>
-            <h1 className="heading">Your Transfers</h1>
+        <div className="wrapper">
+            <p className="curr-balance"><TbPigMoney color="#FF81AE" /> Current Balance: {account.balance} VND</p>
+            <p className="title">Your Transfers</p>
             {transfers && transfers.length > 0 ?
                 <>
                     <TransferList transfers={transfers} user={user} />

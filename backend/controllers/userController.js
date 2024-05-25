@@ -58,7 +58,7 @@ const loginUser = async (req, res) => {
         // set cookies
         // send back user
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-        res.cookie("jwt", token);
+        res.cookie("jwt", token, { maxAge: 10 * 60 * 1000 });
         res.status(200).json(user);
 
     } catch (error) {

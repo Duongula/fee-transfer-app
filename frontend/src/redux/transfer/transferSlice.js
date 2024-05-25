@@ -25,6 +25,7 @@ export const createTransfer = createAsyncThunk("transfer/create", async (transfe
             toast.success(data.message);
         } else {
             toast.error(data.message);
+            return;
         }
         return data;
     } catch (error) {
@@ -48,6 +49,7 @@ export const getTransfers = createAsyncThunk("transfer/getTransfers", async (_, 
 
 export const sendOtpCode = createAsyncThunk("transfer/sendOtpCode", async (dataSend, thunkAPI) => {
     try {
+        console.log("check otp: ", dataSend);
         const response = await fetch('/transfer/send-otp', {
             method: 'POST',
             headers: {
@@ -70,6 +72,7 @@ export const sendOtpCode = createAsyncThunk("transfer/sendOtpCode", async (dataS
 
 export const sendInvoice = createAsyncThunk("transfer/sendInvoice", async (dataSend, thunkAPI) => {
     try {
+        console.log("check invoice: ", dataSend);
         const response = await fetch('/transfer/send-invoice', {
             method: 'POST',
             headers: {

@@ -7,6 +7,8 @@ import { sendOtpCode } from "../redux/transfer/transferSlice";
 import { toast } from 'react-toastify';
 import Loader from "../component/loader/Loader";
 import Select from 'react-select';
+import './Transfer.scss'
+import { TbPigMoney } from "react-icons/tb";
 
 function CreateTransfer() {
     const navigate = useNavigate();
@@ -59,12 +61,12 @@ function CreateTransfer() {
         e.preventDefault();
         if (condition === false) {
             const emailData = {
-                account: account,
-                user: user,
-                fee: fee,
+                account: account._id,
+                recieverEmail: user.email,
+                fee: fee.amount,
                 university: selectedUniversity,
             };
-            if (account.balance < fee.amount) {
+            if (account.balance < fee.amount + feeInfo.amount * 0.01) {
                 toast.error("Your balance is not enough to make this transfer");
                 return;
             } else {
@@ -120,24 +122,24 @@ function CreateTransfer() {
     let isUniversitySelected = selectedUniversity !== null;
 
     return (
-        <div>
+        <div className="wrapper-create-transfer">
             {loading && <Loader />}
-            <h1 className="heading">Make Transfer</h1>
-            <h1 className="heading">Current Balance: {account.balance}VND</h1>
+            <h3 className="title-transfer">Make Transfer</h3>
 
-            <div className="form-wrapper">
+            <div className="form-wrapper mt-4">
+                <h4 className="title-balance"><TbPigMoney color="#FF81AE" /> Current Balance: {account.balance} VND</h4>
                 {!confirmation ? (
                     <form onSubmit={handleConfirmation}>
-                        <div className='form-group'>
-                            <label>Select university</label>
+                        <div className='form-group mt-4'>
+                            <label>Select University</label>
                             <Select
                                 value={selectedUniversity}
                                 onChange={handleChangeSelect}
                                 options={universities}
                             />
                         </div>
-                        <div className='input-group'>
-                            <label>MSSV</label>
+                        <div className='input-group mt-4'>
+                            <label>Student ID</label>
                             <input
                                 className='form-control'
                                 value={studentNumber}
@@ -155,7 +157,7 @@ function CreateTransfer() {
 
                         <button
                             type="submit"
-                            className={`btn ${condition ? "btn-gray" : "btn-red"}`}
+                            className={`btn-confirm btn ${condition ? "btn-gray" : "btn-red"}`}
                             disabled={condition || !isUniversitySelected}
                         >
                             Confirm
@@ -163,15 +165,42 @@ function CreateTransfer() {
                     </form>
                 ) : (
                     <form onSubmit={handleSubmit}>
-                        <p>Confirmation Content:</p>
-                        {/* <p>Nhà cung cấp: { }</p> */}
-                        <p>Mã khách hàng: {studentNumber}</p>
-                        <p>Số tiền: {feeInfo.amount}</p>
-                        <p>Số tiền phí: {Math.floor(feeInfo.amount * 0.01)}</p>
-                        <p>Nội dung: {`${studentNumber}_${feeInfo.student.studentName}_Lop:${feeInfo.student.studentClass}_HeDT:${feeInfo.student.typeTraining}_Namhoc:${feeInfo.year}_HK:${feeInfo.semester}`.replace(/ /g, "")}</p>
+                        <p>Confirmation Information:</p>
+                        <div className="row mt-4">
+                            <div className="col-sm-4">
+                                <p className="mb-0">Student ID</p>
+                            </div>
+                            <div className="col-sm-8">
+                                <p>{studentNumber}</p>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-4">
+                                <p className="mb-0">Amount</p>
+                            </div>
+                            <div className="col-sm-8">
+                                <p>{feeInfo.amount} VND</p>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-4">
+                                <p className="mb-0">Charge amount</p>
+                            </div>
+                            <div className="col-sm-8">
+                                <p>{Math.floor(feeInfo.amount * 0.01)} VND</p>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-4">
+                                <p className="mb-0">Transfer Content</p>
+                            </div>
+                            <div className="col-sm-8">
+                                <p style={{ wordWrap: "break-word" }}>{`${studentNumber}_${feeInfo.student.studentName}_Lop:${feeInfo.student.studentClass}_HeDT:${feeInfo.student.typeTraining}_Namhoc:${feeInfo.year}_HK:${feeInfo.semester}`.replace(/ /g, "")}</p>
+                            </div>
+                        </div>
                         <button
                             type="submit"
-                            className="btn"
+                            className="btn btn-trans"
                         >
                             Create Transfer
                         </button>
